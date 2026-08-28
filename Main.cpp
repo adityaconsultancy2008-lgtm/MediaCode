@@ -6,6 +6,15 @@ class Mediaengine{
          std::vector<std::string> VideoQueue;
 
     public:
-       void addMedia (const std::string& filepath){}
-    
+       void addMedia (const std::string& filepath){
+        VideoQueue.push_back(filepath);
+       }
+    void processQueue(){
+        for(const std::string& video:VideoQueue){
+            std::cout << "Now Processing.." << video <<std::endl;
+        }
+    }
 };
+int main(){
+    Mediaengine engine;
+}

@@ -17,4 +17,9 @@ class Mediaengine{
 };
 int main(){
     Mediaengine engine;
+    engine.addMedia("Chomik.mp4");
+    engine.addMedia("yooo.mp4");
+    engine.processQueue();
+    return 0;
+
 }

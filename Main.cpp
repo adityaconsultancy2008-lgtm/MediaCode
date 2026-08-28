@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include<cstdlib>
 class Mediaengine{
     private:
          std::vector<std::string> VideoQueue;
@@ -12,6 +13,13 @@ class Mediaengine{
     void processQueue(){
         for(const std::string& video:VideoQueue){
             std::cout << "Now Processing.." << video <<std::endl;
+            std::string command = "ffmpeg -i "+ video + " -c:v libx264 -preset ultrafast output_" + video;
+          int returncode = std::system(command.c_str());
+          if (returncode == 0) {
+                std::cout << "[SUCCESS] Done encoding " << video << std::endl;
+            } else {
+                std::cout << "[ERROR] FFmpeg failed on " << video << std::endl;
+            }
         }
     }
 };

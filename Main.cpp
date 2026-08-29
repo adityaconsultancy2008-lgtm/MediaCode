@@ -2,9 +2,19 @@
 #include<string>
 #include<vector>
 #include<cstdlib>
+#include<fstream>
 class Mediaengine{
     private:
          std::vector<std::string> VideoQueue;
+         bool fileExists(const std::string& filename){
+            std::ifstream f(filename);
+            return f.good();
+         }
+         
+         
+        
+         
+        
 
     public:
        void addMedia (const std::string& filepath){
@@ -12,6 +22,10 @@ class Mediaengine{
        }
     void processQueue(){
         for(const std::string& video:VideoQueue){
+            if(!fileExists(video)){
+                std::cout << video << "not found, creating synthetic using fmmpeg.." << std::endl;
+                std::string CreateCmd = "ffmpeg -loglevel error -y -f lavfi -i testsrc=duration=3:size=1280x720:rate=30" + video;
+            }
             std::cout << "Now Processing.." << video <<std::endl;
             std::string command = "ffmpeg -loglevel error -i "+ video + " -c:v libx264 -preset ultrafast output_" + video;
           int returncode = std::system(command.c_str());

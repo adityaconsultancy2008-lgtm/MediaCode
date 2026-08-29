@@ -25,6 +25,7 @@ class Mediaengine{
             if(!fileExists(video)){
                 std::cout << video << "not found, creating synthetic using fmmpeg.." << std::endl;
                 std::string CreateCmd = "ffmpeg -loglevel error -y -f lavfi -i testsrc=duration=3:size=1280x720:rate=30" + video;
+                std::system(CreateCmd.c_str())
             }
             std::cout << "Now Processing.." << video <<std::endl;
             std::string command = "ffmpeg -loglevel error -i "+ video + " -c:v libx264 -preset ultrafast output_" + video;

@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdlib>
 #include <fstream>
+#include <cstdio>
+
 
 class Mediaengine {
 private:

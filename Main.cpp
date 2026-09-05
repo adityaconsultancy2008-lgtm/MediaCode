@@ -3,13 +3,14 @@
 #include <vector>
 #include <cstdlib>
 #include <fstream>
-#include <cstdio>
-
 
 class Mediaengine {
 private:
     std::vector<std::string> VideoQueue;
-    
+
+    // Clean path without internal outer quotes
+    const std::string ffmpegBin = "D:\\msys64\\ucrt64\\bin\\ffmpeg.exe";
+
     bool fileExists(const std::string& filename) {
         std::ifstream f(filename);
         return f.good();
@@ -24,23 +25,26 @@ public:
         for (const std::string& video : VideoQueue) {
             if (!fileExists(video)) {
                 std::cout << video << " not found, creating synthetic using ffmpeg.." << std::endl;
-                
-                // Added space before video and wrapped path in quotes!
-                std::string CreateCmd = "ffmpeg -loglevel error -y -f lavfi -i testsrc=duration=3:size=1280x720:rate=30 \"" + video + "\"";
-                std::system(CreateCmd.c_str()); // added missing semicolon here
+
+                // Wrap whole string in outer quotes to satisfy Windows CMD quote parsing
+                std::string CreateCmd = "\"" + ffmpegBin + " -loglevel error -y -f lavfi -i testsrc=duration=3:size=1280x720:rate=30 "
+                                        "-f lavfi -i anullsrc=r=44100:cl=stereo -c:v libx264 -c:a aac -shortest \"" + video + "\"\"";
+                std::system(CreateCmd.c_str());
             }
-            
+
             std::cout << "Now Processing.. " << video << std::endl;
-            
-            // wrapped paths in quotes to protect against spaces in filenames(no shit sherlock)
-            std::string command = "ffmpeg -loglevel error -i \"" + video + "\" -c:v libx264 -preset ultrafast \"output_" + video + "\"";
-            
+
+            std::string outputFile = "processed_" + video;
+
+            // Double-quoted wrapper around entire command string
+            std::string command = "\"" + ffmpegBin + " -loglevel error -y -i \"" + video + "\" -c:v libx264 -preset ultrafast -c:a copy \"" + outputFile + "\"\"";
+
             int returncode = std::system(command.c_str());
-            
+
             if (returncode == 0) {
-                std::cout << "[SUCCESS] Done encoding " << video << std::endl;
+                std::cout << "[SUCCESS] Done encoding " << video << " -> " << outputFile << std::endl;
             } else {
-                std::cout << "[ERROR] FFmpeg failed on " << video << std::endl;
+                std::cout << "[ERROR] FFmpeg failed on " << video << " (Exit code: " << returncode << ")" << std::endl;
             }
         }
     }
